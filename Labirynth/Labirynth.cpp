@@ -5,7 +5,10 @@
 #include <Magnum/GL/Version.h>
 #include <Magnum/Math/Color.h>
 #include <Magnum/Platform/Sdl2Application.h>
+
 #include <vector>
+#include <chrono>
+
 
 using namespace Magnum;
 using namespace std;
@@ -17,6 +20,11 @@ public:
 private:
     void drawEvent() override;
     void keyPressEvent(KeyEvent& event) override;
+
+    std::chrono::time_point<std::chrono::system_clock> firstKeyPressDate 
+                        = std::chrono::system_clock::now() 
+                            - std::chrono::microseconds(10s);
+    int exitKeyPressCounter = 0;
 };
 
 GameWindow::GameWindow(const Arguments& arguments,
@@ -42,7 +50,22 @@ void GameWindow::drawEvent() {
 
 void GameWindow::keyPressEvent(KeyEvent& event) {
     if (event.key() == KeyEvent::Key::Esc) {
-        this->exit();
+        auto keyPressDate = std::chrono:: system_clock::now();
+        auto timeDurationInMs = std::chrono::duration_cast<std::chrono::milliseconds>(keyPressDate - firstKeyPressDate).count();
+
+        const long long maximumTimeDurationForExitInMs = 1000;
+        const int exitKeyPressForApplicationQuit = 2;
+
+        if (timeDurationInMs > maximumTimeDurationForExitInMs) {
+            firstKeyPressDate = keyPressDate;
+            exitKeyPressCounter = 1;
+        } else {
+            ++exitKeyPressCounter;
+        }
+
+        if (exitKeyPressCounter == exitKeyPressForApplicationQuit) {
+            this->exit();
+        }
     }
 }
 
