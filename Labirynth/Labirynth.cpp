@@ -8,6 +8,7 @@
 
 #include <vector>
 #include <chrono>
+import LabyrinthConfig;
 
 
 using namespace Magnum;
@@ -33,7 +34,7 @@ GameWindow::GameWindow(const Arguments& arguments,
 {
     using namespace Math::Literals;
 
-    GL::Renderer::setClearColor(0x1a4a1f_rgbf);
+    GL::Renderer::setClearColor(config::window::backgroundColor);
 
     Debug{} << "Hello! This application is running on"
         << GL::Context::current().version() << "using"
@@ -49,21 +50,19 @@ void GameWindow::drawEvent() {
 }
 
 void GameWindow::keyPressEvent(KeyEvent& event) {
-    if (event.key() == KeyEvent::Key::Esc) {
+    if (event.key() == config::secretExit::exitKey) {
         auto keyPressDate = std::chrono:: system_clock::now();
         auto timeDurationInMs = std::chrono::duration_cast<std::chrono::milliseconds>(keyPressDate - firstKeyPressDate).count();
+        
 
-        const long long maximumTimeDurationForExitInMs = 1000;
-        const int exitKeyPressForApplicationQuit = 2;
-
-        if (timeDurationInMs > maximumTimeDurationForExitInMs) {
+        if (timeDurationInMs > config::secretExit::maximumTimeDurationInMs) {
             firstKeyPressDate = keyPressDate;
             exitKeyPressCounter = 1;
         } else {
             ++exitKeyPressCounter;
         }
 
-        if (exitKeyPressCounter == exitKeyPressForApplicationQuit) {
+        if (exitKeyPressCounter == config::secretExit::numberOfKeyPressForApplicationQuit) {
             this->exit();
         }
     }
@@ -79,9 +78,9 @@ int main(int argc, char** argv)
 
 
     Magnum::Platform::Sdl2Application::Configuration config;
-    config.setTitle("Escape from Labyrinth");
+    config.setTitle(config::window::title);
  //   config.addWindowFlags(Magnum::Platform::Sdl2Application::Configuration::WindowFlag::FullscreenDesktop);
-    config.setSize(Vector2i{ 1920,1080 }, Vector2{ 1, 1 });
+    config.setSize(config::window::resolution, config::window::dpiScalingForResolution);
 
 
     Magnum::Platform::Sdl2Application::GLConfiguration glConfig;

@@ -18,5 +18,8 @@
     <ClCompile Include="Labirynth.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="LabyrinthConfig.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
