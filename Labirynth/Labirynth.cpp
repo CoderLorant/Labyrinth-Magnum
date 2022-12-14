@@ -5,6 +5,13 @@
 #include <Magnum/GL/Version.h>
 #include <Magnum/Math/Color.h>
 #include <Magnum/Platform/Sdl2Application.h>
+#include <Magnum/Shaders/VertexColor.h>
+#include <Magnum/Shaders/Flat.h>
+#include <Magnum/GL/Mesh.h>
+#include <Magnum/GL/Buffer.h>
+#include <Magnum/Primitives/Square.h>
+#include <Magnum/MeshTools/Compile.h>
+#include <Magnum/Trade/MeshData.h>
 
 #include <vector>
 #include <chrono>
@@ -13,6 +20,7 @@ import LabyrinthConfig;
 
 using namespace Magnum;
 using namespace std;
+using namespace Math::Literals;
 
 class GameWindow : public Platform::Application {
 public:
@@ -26,25 +34,53 @@ private:
                         = std::chrono::system_clock::now() 
                             - std::chrono::microseconds(10s);
     int exitKeyPressCounter = 0;
+    GL::Mesh triangleMesh;
+    GL::Mesh squareMesh;
+    Shaders::VertexColor2D triangleShader;
+    Shaders::Flat2D squareShader;
 };
 
 GameWindow::GameWindow(const Arguments& arguments,
     const Configuration& config, const GLConfiguration& glConfig) :
     Platform::Application{ arguments, config, glConfig }
 {
-    using namespace Math::Literals;
 
-    GL::Renderer::setClearColor(config::window::backgroundColor);
+   GL::Renderer::setClearColor(config::window::backgroundColor);
+  //  GL::Renderer::set(config::window::backgroundColor);
 
     Debug{} << "Hello! This application is running on"
         << GL::Context::current().version() << "using"
         << GL::Context::current().rendererString();
+
+    struct TriangleVertex {
+        Vector2 position;
+        Color3 color;
+    };
+    const TriangleVertex meshColoringData[]{
+        {{-0.3f, -0.4f}, 0xff0000_rgbf},    // Left vertex, red color (x,y)
+        {{ 0.3f, -0.4f}, 0x00ff000_rgbf},    // Right vertex, green color (x,y)
+        {{ 0.0f,  0.4f}, 0x0000ff_rgbf}     //Top vertex, blue color (x,y)
+    };
+
+    GL::Buffer buffer;
+    buffer.setData(meshColoringData);
+  //  Trade::MeshData data = …;
+
+  //  GL::Mesh mesh = MeshTools::compile(data);
+    squareMesh = MeshTools::compile(Primitives::squareSolid());
+
+    triangleMesh.setCount(3)
+        .addVertexBuffer(std::move(buffer), 0,
+            Shaders::VertexColor2D::Position{},
+            Shaders::VertexColor2D::Color3{});
 }
 
 void GameWindow::drawEvent() {
     GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
+    
+    triangleShader.draw(triangleMesh);
+    squareShader.setColor(0x329ea8_rgbf).draw(squareMesh);
 
-    //drawing code goes here
 
     swapBuffers();
 }
