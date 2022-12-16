@@ -12,6 +12,7 @@
 #include <Magnum/Primitives/Square.h>
 #include <Magnum/MeshTools/Compile.h>
 #include <Magnum/Trade/MeshData.h>
+#include <Magnum/Math/Matrix3.h>
 
 #include <vector>
 #include <chrono>
@@ -34,9 +35,12 @@ private:
                         = std::chrono::system_clock::now() 
                             - std::chrono::microseconds(10s);
     int exitKeyPressCounter = 0;
-    GL::Mesh triangleMesh;
+    float playerSpeed = 0.3;
+    Magnum::Vector2 playerPosition;
+    
+    
+    Magnum::Matrix3 playerScale;
     GL::Mesh squareMesh;
-    Shaders::VertexColor2D triangleShader;
     Shaders::Flat2D squareShader;
 };
 
@@ -52,33 +56,25 @@ GameWindow::GameWindow(const Arguments& arguments,
         << GL::Context::current().version() << "using"
         << GL::Context::current().rendererString();
 
-    struct TriangleVertex {
-        Vector2 position;
-        Color3 color;
-    };
-    const TriangleVertex meshColoringData[]{
-        {{-0.3f, -0.4f}, 0xff0000_rgbf},    // Left vertex, red color (x,y)
-        {{ 0.3f, -0.4f}, 0x00ff000_rgbf},    // Right vertex, green color (x,y)
-        {{ 0.0f,  0.4f}, 0x0000ff_rgbf}     //Top vertex, blue color (x,y)
-    };
+    float scaleX = static_cast<float>(config::player::playerWidth) / config::window::resolution.x();
+    float scaleY = static_cast<float>(config::player::playerHeight) / config::window::resolution.y();
+    Magnum::Vector2 playerScaleVector = { scaleX, scaleY };
+    playerScale = Matrix3::scaling(playerScaleVector);
+    
 
-    GL::Buffer buffer;
-    buffer.setData(meshColoringData);
-  //  Trade::MeshData data = …;
 
-  //  GL::Mesh mesh = MeshTools::compile(data);
-    squareMesh = MeshTools::compile(Primitives::squareSolid());
 
-    triangleMesh.setCount(3)
-        .addVertexBuffer(std::move(buffer), 0,
-            Shaders::VertexColor2D::Position{},
-            Shaders::VertexColor2D::Color3{});
+    Trade::MeshData squareMeshData= Primitives::squareSolid();
+    squareMesh = MeshTools::compile(squareMeshData);
+
 }
 
 void GameWindow::drawEvent() {
     GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
-    
-    triangleShader.draw(triangleMesh);
+
+     //   * Matrix3::rotation(23.0_degf);
+    //63,35
+    squareShader.setTransformationProjectionMatrix(playerScale * Matrix3::translation(playerPosition));
     squareShader.setColor(0x329ea8_rgbf).draw(squareMesh);
 
 
@@ -101,6 +97,25 @@ void GameWindow::keyPressEvent(KeyEvent& event) {
         if (exitKeyPressCounter == config::secretExit::numberOfKeyPressForApplicationQuit) {
             this->exit();
         }
+    }
+    else if (event.key() == KeyEvent::Key::W) {
+        playerPosition += (Magnum::Vector2{ 0,1 }) * playerSpeed;
+        /*Debug{} << "Player position :"
+            << playerPosition.x() << " : "
+            << playerPosition.y();*/
+        redraw();
+    }
+    else if (event.key() == KeyEvent::Key::A) {
+        playerPosition += (Magnum::Vector2{ -1,0 }) * playerSpeed;
+        redraw();
+    }
+    else if (event.key() == KeyEvent::Key::S) {
+        playerPosition += (Magnum::Vector2{ 0,-1 }) * playerSpeed;
+        redraw();
+    }
+    else if (event.key() == KeyEvent::Key::D) {
+        playerPosition += (Magnum::Vector2{ 1,0 }) * playerSpeed;
+        redraw();
     }
 }
 

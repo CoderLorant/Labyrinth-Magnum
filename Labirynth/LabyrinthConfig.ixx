@@ -24,4 +24,8 @@ export namespace config {
 		const long long maximumTimeDurationInMs = 1000;
 		const int numberOfKeyPressForApplicationQuit = 2;
 	}
+	namespace player {
+		const int playerWidth = 30;
+		const int playerHeight = 30;
+	}
 }
