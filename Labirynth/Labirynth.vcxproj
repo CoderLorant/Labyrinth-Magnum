@@ -133,6 +133,8 @@
   <ItemGroup>
     <ClCompile Include="Labirynth.cpp" />
     <ClCompile Include="LabyrinthConfig.ixx" />
+    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Player.ixx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -5,19 +5,13 @@
 #include <Magnum/GL/Version.h>
 #include <Magnum/Math/Color.h>
 #include <Magnum/Platform/Sdl2Application.h>
-#include <Magnum/Shaders/VertexColor.h>
 #include <Magnum/Shaders/Flat.h>
-#include <Magnum/GL/Mesh.h>
-#include <Magnum/GL/Buffer.h>
-#include <Magnum/Primitives/Square.h>
-#include <Magnum/MeshTools/Compile.h>
-#include <Magnum/Trade/MeshData.h>
 #include <Magnum/Math/Matrix3.h>
-
 #include <vector>
 #include <chrono>
-import LabyrinthConfig;
 
+import LabyrinthConfig;
+import Player;
 
 using namespace Magnum;
 using namespace std;
@@ -35,13 +29,8 @@ private:
                         = std::chrono::system_clock::now() 
                             - std::chrono::microseconds(10s);
     int exitKeyPressCounter = 0;
-    float playerSpeed = 0.3;
-    Magnum::Vector2 playerPosition;
+    Player player{ {config::player::playerWidth , config::player::playerHeight }, {0,0}, 1.f, config::window::screenSize };
     
-    
-    Magnum::Matrix3 playerScale;
-    GL::Mesh squareMesh;
-    Shaders::Flat2D squareShader;
 };
 
 GameWindow::GameWindow(const Arguments& arguments,
@@ -54,29 +43,13 @@ GameWindow::GameWindow(const Arguments& arguments,
 
     Debug{} << "Hello! This application is running on"
         << GL::Context::current().version() << "using"
-        << GL::Context::current().rendererString();
-
-    float scaleX = static_cast<float>(config::player::playerWidth) / config::window::resolution.x();
-    float scaleY = static_cast<float>(config::player::playerHeight) / config::window::resolution.y();
-    Magnum::Vector2 playerScaleVector = { scaleX, scaleY };
-    playerScale = Matrix3::scaling(playerScaleVector);
-    
-
-
-
-    Trade::MeshData squareMeshData= Primitives::squareSolid();
-    squareMesh = MeshTools::compile(squareMeshData);
-
+        << GL::Context::current().rendererString();    
 }
 
 void GameWindow::drawEvent() {
     GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
 
-     //   * Matrix3::rotation(23.0_degf);
-    //63,35
-    squareShader.setTransformationProjectionMatrix(playerScale * Matrix3::translation(playerPosition));
-    squareShader.setColor(0x329ea8_rgbf).draw(squareMesh);
-
+    player.draw();
 
     swapBuffers();
 }
@@ -98,23 +71,20 @@ void GameWindow::keyPressEvent(KeyEvent& event) {
             this->exit();
         }
     }
-    else if (event.key() == KeyEvent::Key::W) {
-        playerPosition += (Magnum::Vector2{ 0,1 }) * playerSpeed;
-        /*Debug{} << "Player position :"
-            << playerPosition.x() << " : "
-            << playerPosition.y();*/
+    else if (event.key() == config::player::moveUpKey) {
+        player.startMove(MovingDirection::UP);
         redraw();
     }
-    else if (event.key() == KeyEvent::Key::A) {
-        playerPosition += (Magnum::Vector2{ -1,0 }) * playerSpeed;
+    else if (event.key() == config::player::moveLeftKey) {
+        player.startMove(MovingDirection::LEFT);
         redraw();
     }
-    else if (event.key() == KeyEvent::Key::S) {
-        playerPosition += (Magnum::Vector2{ 0,-1 }) * playerSpeed;
+    else if (event.key() == config::player::moveDownKey) {
+        player.startMove(MovingDirection::DOWN);
         redraw();
     }
-    else if (event.key() == KeyEvent::Key::D) {
-        playerPosition += (Magnum::Vector2{ 1,0 }) * playerSpeed;
+    else if (event.key() == config::player::moveRightKey) {
+        player.startMove(MovingDirection::RIGHT);
         redraw();
     }
 }
@@ -124,19 +94,17 @@ int main(int argc, char** argv)
 {
     vector<const char*> a{ argv[0], "--magnum-log","verbose" };
     char** argsData = const_cast<char**>(a.data());
-    int argsCount = a.size();
+    int argsCount = static_cast<int>(a.size());
     Magnum::Platform::Sdl2Application::Arguments args{ argsCount, argsData };
 
 
     Magnum::Platform::Sdl2Application::Configuration config;
     config.setTitle(config::window::title);
  //   config.addWindowFlags(Magnum::Platform::Sdl2Application::Configuration::WindowFlag::FullscreenDesktop);
-    config.setSize(config::window::resolution, config::window::dpiScalingForResolution);
-
+    config.setSize(config::window::screenSize, config::window::dpiScalingForResolution);
 
     Magnum::Platform::Sdl2Application::GLConfiguration glConfig;
    
-
     GameWindow app(args, config, glConfig);
  //   app.setCursor(Magnum::Platform::Sdl2Application::Cursor::Wait);
     int n = app.exec();
