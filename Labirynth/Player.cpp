@@ -68,20 +68,20 @@ void Player::startMove(MovingDirection direction)
     bottomY = playerMiddlePosition.y() - height / 2;
     leftX = playerMiddlePosition.x() - width / 2;
     rightX = playerMiddlePosition.x() + width / 2;
-    if (topY * scaleY > 1.f) {
-        playerMiddlePosition.y() = 1 / scaleY -  (height / 2) * scaleY;
+    if (topY * scaleY >= 1.f) {
+        playerMiddlePosition.y() = 1 / scaleY -  (height / scaleY)/2;
     //    topY = 1.f;
     }
     if (bottomY * scaleY < -1.f) {
-        playerMiddlePosition.y() = -1 / scaleY + height / 2;
+        playerMiddlePosition.y() = -1 / scaleY + (height / scaleY) / 2;
      //   bottomY = -1.f;
     }
     if (leftX * scaleX < -1.f) {
-        playerMiddlePosition.x() = -1 / scaleX + width / 2;
+        playerMiddlePosition.x() = -1 / scaleX + (width / scaleX) / 2;
      //   leftX = -1.f;
     }
     if (rightX * scaleX > 1.f) {
-        playerMiddlePosition.x() = 1 / scaleX - width / 2;
+        playerMiddlePosition.x() = 1 / scaleX - (width / scaleX) / 2;
      //   rightX = 1.f;
     }
     Debug{} << "MiddlePosition: " << playerMiddlePosition.x() << " : " << playerMiddlePosition.y();

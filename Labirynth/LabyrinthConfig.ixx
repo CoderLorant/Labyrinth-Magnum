@@ -30,8 +30,8 @@ export namespace config {
 		const int numberOfKeyPressForApplicationQuit = 2;
 	}
 	namespace player {
-		const int playerWidth = 30;
-		const int playerHeight = 30;
+		const int playerWidth = 50;
+		const int playerHeight = 100;
 		const Sdl2Application::KeyEvent::Key moveUpKey = Sdl2Application::KeyEvent::Key::W;
 		const Sdl2Application::KeyEvent::Key moveLeftKey = Sdl2Application::KeyEvent::Key::A;
 		const Sdl2Application::KeyEvent::Key moveDownKey = Sdl2Application::KeyEvent::Key::S;
