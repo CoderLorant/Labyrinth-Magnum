@@ -29,11 +29,19 @@ public:
     void draw();
     void startMove(MovingDirection direction);
 private: 
-    Magnum::Vector2 playerPosition = { -1,1 };
+    Magnum::Vector2 playerMiddlePosition = { -1,1 };
     Magnum::Matrix3 playerScale;
     GL::Mesh squareMesh;
     Shaders::Flat2D squareShader;
     float speed;
+    float topY;
+    float bottomY;
+    float leftX;
+    float rightX;
+    float height;
+    float width;
+    float scaleX;
+    float scaleY;
 
 };
 
