@@ -24,12 +24,14 @@ public:
 private:
     void drawEvent() override;
     void keyPressEvent(KeyEvent& event) override;
+    void keyReleaseEvent(KeyEvent& event) override;
 
     std::chrono::time_point<std::chrono::system_clock> firstKeyPressDate 
                         = std::chrono::system_clock::now() 
                             - std::chrono::microseconds(10s);
     int exitKeyPressCounter = 0;
-    Player player{ {config::player::playerWidth , config::player::playerHeight }, {0,0}, 1.f, config::window::screenSize };
+    Player player{ {config::player::playerWidth , config::player::playerHeight }, config::player::startMiddlePosition,
+                    config::player::startSpeed, config::window::screenSize };
     
 };
 
@@ -50,8 +52,8 @@ void GameWindow::drawEvent() {
     GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
 
     player.draw();
-
     swapBuffers();
+    redraw();
 }
 
 void GameWindow::keyPressEvent(KeyEvent& event) {
@@ -72,20 +74,35 @@ void GameWindow::keyPressEvent(KeyEvent& event) {
         }
     }
     else if (event.key() == config::player::moveUpKey) {
-        player.startMove(MovingDirection::UP);
-        redraw();
+  //      player.startMove(MovingDirection::UP);
+        player.subscribeMovingDirection(MovingDirection::UP);
     }
     else if (event.key() == config::player::moveLeftKey) {
-        player.startMove(MovingDirection::LEFT);
-        redraw();
+  //      player.startMove(MovingDirection::LEFT);
+        player.subscribeMovingDirection(MovingDirection::LEFT);
     }
     else if (event.key() == config::player::moveDownKey) {
-        player.startMove(MovingDirection::DOWN);
-        redraw();
+  //      player.startMove(MovingDirection::DOWN);
+        player.subscribeMovingDirection(MovingDirection::DOWN);
     }
     else if (event.key() == config::player::moveRightKey) {
-        player.startMove(MovingDirection::RIGHT);
-        redraw();
+//        player.startMove(MovingDirection::RIGHT);
+        player.subscribeMovingDirection(MovingDirection::RIGHT);
+    }
+}
+
+void GameWindow::keyReleaseEvent(KeyEvent& event) {
+     if (event.key() == config::player::moveUpKey) {
+        player.unsubscribeMovingDirection(MovingDirection::UP);
+    }
+    else if (event.key() == config::player::moveLeftKey) {
+        player.unsubscribeMovingDirection(MovingDirection::LEFT);
+    }
+    else if (event.key() == config::player::moveDownKey) {
+        player.unsubscribeMovingDirection(MovingDirection::DOWN);
+    }
+    else if (event.key() == config::player::moveRightKey) {
+        player.unsubscribeMovingDirection(MovingDirection::RIGHT);
     }
 }
 

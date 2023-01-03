@@ -27,9 +27,18 @@ export class Player {
 public:
 	Player(Magnum::Vector2i playerSizeInPixels, Magnum::Vector2 startPosition, float startSpeed, Magnum::Vector2i screenSize);
     void draw();
-    void startMove(MovingDirection direction);
+    void subscribeMovingDirection(MovingDirection direction);
+    void unsubscribeMovingDirection(MovingDirection direction);
 private: 
-    Magnum::Vector2 playerMiddlePosition = { -1,1 };
+    void moveIfInMotion();
+    void checkCollisionDetectionWithScreenBorder();
+    void validateInMotion();
+    void calculateCombinedDirections();
+    void calculateDefaultDirection();
+    /// <summary>
+    /// this is the middle position of the player within -1,1 cartisian coordinate system
+    /// </summary>
+    Magnum::Vector2 unscaledPlayerMiddlePosition;
     Magnum::Matrix3 playerScale;
     GL::Mesh squareMesh;
     Shaders::Flat2D squareShader;
@@ -42,7 +51,28 @@ private:
     float width;
     float scaleX;
     float scaleY;
-
+    bool inMotion = false;
+    int movingAngle;
+    bool rightPressed = false;
+    bool leftPressed = false;
+    bool upPressed = false;
+    bool downPressed = false;
+    float sin0 = 0.f;
+    float cos0 = 1.f;
+    float sin45 = 0.707106f;
+    float cos45 = 0.707106f;
+    float sin90 = 1.f;
+    float cos90 = 0.f;
+    float sin135 = 0.707106f;
+    float cos135 = -0.707106f;
+    float sin180 = 0.f;
+    float cos180 = -1.f;
+    float sin225 = -0.707106f;
+    float cos225 = -0.707106f;
+    float sin270 = -1.f;
+    float cos270 = 0.f;
+    float sin315 = -0.707106f;
+    float cos315 = 0.707106f;
 };
 
 

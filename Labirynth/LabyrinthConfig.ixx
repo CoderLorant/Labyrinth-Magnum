@@ -30,11 +30,13 @@ export namespace config {
 		const int numberOfKeyPressForApplicationQuit = 2;
 	}
 	namespace player {
-		const int playerWidth = 50;
-		const int playerHeight = 100;
+		const int playerWidth = 30;
+		const int playerHeight = 30;
 		const Sdl2Application::KeyEvent::Key moveUpKey = Sdl2Application::KeyEvent::Key::W;
 		const Sdl2Application::KeyEvent::Key moveLeftKey = Sdl2Application::KeyEvent::Key::A;
 		const Sdl2Application::KeyEvent::Key moveDownKey = Sdl2Application::KeyEvent::Key::S;
 		const Sdl2Application::KeyEvent::Key moveRightKey = Sdl2Application::KeyEvent::Key::D;
+		const Magnum::Vector2 startMiddlePosition = { 0,0 };
+		const float startSpeed = 0.05f;
 	}
 }

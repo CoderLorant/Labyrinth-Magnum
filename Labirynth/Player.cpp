@@ -21,18 +21,18 @@ Player::Player(Magnum::Vector2i playerSizeInPixels, Magnum::Vector2 startPositio
     scaleY = static_cast<float>(playerSizeInPixels.y()) / screenSize.y();
     Magnum::Vector2 playerScaleVector = { scaleX,scaleY };
     playerScale = Matrix3::scaling(playerScaleVector);
-    playerMiddlePosition = startPosition;
+    unscaledPlayerMiddlePosition = startPosition;
     height = scaleY * 2;
     width = scaleX * 2;
     Debug{} << "Scale: " << scaleX << " : " << scaleY;
     Debug{} << "Size: " << height << " : " << width;
     
-    topY = playerMiddlePosition.y() + height / 2;
-    bottomY = playerMiddlePosition.y() - height / 2;
-    leftX = playerMiddlePosition.x() - width / 2;
-    rightX = playerMiddlePosition.x() + width / 2;
+    topY = unscaledPlayerMiddlePosition.y() + height / 2;
+    bottomY = unscaledPlayerMiddlePosition.y() - height / 2;
+    leftX = unscaledPlayerMiddlePosition.x() - width / 2;
+    rightX = unscaledPlayerMiddlePosition.x() + width / 2;
 
-    Debug{} << "MiddlePosition: " << playerMiddlePosition.x() << " : " << playerMiddlePosition.y();
+    Debug{} << "MiddlePosition: " << unscaledPlayerMiddlePosition.x() << " : " << unscaledPlayerMiddlePosition.y();
 
     Debug{} << "Borders: " << topY << " : " << bottomY << " : " << leftX << " : " << rightX;
     Trade::MeshData squareMeshData = Primitives::squareSolid();
@@ -43,47 +43,141 @@ Player::Player(Magnum::Vector2i playerSizeInPixels, Magnum::Vector2 startPositio
 
 void Player::draw()
 {
-    squareShader.setTransformationProjectionMatrix(playerScale * Matrix3::translation(playerMiddlePosition));
-    squareShader.setColor(0x329ea8_rgbf).draw(squareMesh);
+    moveIfInMotion();
+    squareShader.setTransformationProjectionMatrix(playerScale * Matrix3::translation(unscaledPlayerMiddlePosition))
+                .setColor(0x329ea8_rgbf)
+                .draw(squareMesh);
 }
 
-void Player::startMove(MovingDirection direction)
-{ 
-    switch (direction)
-    {
-    case MovingDirection::RIGHT:
-        playerMiddlePosition += (Magnum::Vector2{ 1,0 }) * speed;
-        break;
-    case MovingDirection::LEFT:
-        playerMiddlePosition += (Magnum::Vector2{ -1,0 }) * speed;
-        break;
-    case MovingDirection::DOWN:
-        playerMiddlePosition += (Magnum::Vector2{ 0,-1 }) * speed;
-        break;
-    case MovingDirection::UP:
-        playerMiddlePosition += (Magnum::Vector2{ 0,1 }) * speed; 
-        break;
+void Player::moveIfInMotion()
+{
+    if (!inMotion) {
+        return;
     }
-    topY = playerMiddlePosition.y() + height / 2;
-    bottomY = playerMiddlePosition.y() - height / 2;
-    leftX = playerMiddlePosition.x() - width / 2;
-    rightX = playerMiddlePosition.x() + width / 2;
-    if (topY * scaleY >= 1.f) {
-        playerMiddlePosition.y() = 1 / scaleY -  (height / scaleY)/2;
-    //    topY = 1.f;
+    float x = 0, y = 0;
+
+    if (movingAngle == 0) {
+        x = cos0; y = sin0;
+    }
+    else if (movingAngle == 45) {
+        x = cos45; y = sin45;
+    }
+    else if (movingAngle == 90) {
+        x = cos90; y = sin90;
+    }
+    else if (movingAngle == 135) {
+        x = cos135; y = sin135;
+    }
+    else if (movingAngle == 180) {
+        x = cos180; y = sin180;
+    }
+    else if (movingAngle == 225) {
+        x = cos225; y = sin225;
+    }
+    else if (movingAngle == 270) {
+        x = cos270; y = sin270;
+    }
+    else if (movingAngle == 315) {
+        x = cos315; y = sin315;
+    }
+    unscaledPlayerMiddlePosition += (Magnum::Vector2{ x,y }) * speed;
+    checkCollisionDetectionWithScreenBorder();
+}
+
+void Player::checkCollisionDetectionWithScreenBorder()
+{
+    topY = unscaledPlayerMiddlePosition.y() + (height / scaleY) / 2;
+    bottomY = unscaledPlayerMiddlePosition.y() - (height / scaleY) / 2;
+    leftX = unscaledPlayerMiddlePosition.x() - (width / scaleX) / 2;
+    rightX = unscaledPlayerMiddlePosition.x() + (width / scaleX) / 2;
+    if (topY * scaleY > 1.f) {
+        unscaledPlayerMiddlePosition.y() = 1 / scaleY - (height / scaleY) / 2;
     }
     if (bottomY * scaleY < -1.f) {
-        playerMiddlePosition.y() = -1 / scaleY + (height / scaleY) / 2;
-     //   bottomY = -1.f;
+        unscaledPlayerMiddlePosition.y() = -1 / scaleY + (height / scaleY) / 2;
     }
     if (leftX * scaleX < -1.f) {
-        playerMiddlePosition.x() = -1 / scaleX + (width / scaleX) / 2;
-     //   leftX = -1.f;
+        unscaledPlayerMiddlePosition.x() = -1 / scaleX + (width / scaleX) / 2;
     }
     if (rightX * scaleX > 1.f) {
-        playerMiddlePosition.x() = 1 / scaleX - (width / scaleX) / 2;
-     //   rightX = 1.f;
+        unscaledPlayerMiddlePosition.x() = 1 / scaleX - (width / scaleX) / 2;
     }
-    Debug{} << "MiddlePosition: " << playerMiddlePosition.x() << " : " << playerMiddlePosition.y();
-    Debug{} << "Borders: " << topY << " : " << bottomY << " : " << leftX << " : " << rightX;
+}
+
+void Player::validateInMotion()
+{
+    if (upPressed && downPressed && !leftPressed && !rightPressed) {
+        inMotion = false;
+    }else if (leftPressed && rightPressed && !upPressed && !downPressed) {
+        inMotion = false;
+    }else if (!leftPressed && !rightPressed && !upPressed && !downPressed) {
+        inMotion = false;
+    }else {
+        inMotion = true;
+    }
+}
+
+void Player::calculateCombinedDirections()
+{
+    if (upPressed && rightPressed) {
+        movingAngle = 45;
+    }
+    else if (downPressed && rightPressed) {
+        movingAngle = 315;
+    }
+    else if (upPressed && leftPressed) {
+        movingAngle = 135;
+    }
+    else if (downPressed && leftPressed) {
+        movingAngle = 225;
+    }
+}
+
+void Player::calculateDefaultDirection()
+{
+    if (rightPressed) {
+        movingAngle = 0;
+    }else if (upPressed) {
+        movingAngle = 90;
+    }else if (leftPressed) {
+        movingAngle = 180;
+    }else if (downPressed) {
+        movingAngle = 270;
+    }
+
+}
+
+void Player::subscribeMovingDirection(MovingDirection direction)
+{
+    if (direction == MovingDirection::RIGHT) {
+        rightPressed = true;
+    }else if (direction == MovingDirection::UP) {
+        upPressed = true;
+    }else if (direction == MovingDirection::LEFT) {
+        leftPressed = true;
+    }else if (direction == MovingDirection::DOWN) {
+        downPressed = true;
+    }
+    validateInMotion();
+    calculateDefaultDirection();
+    calculateCombinedDirections();
+}
+
+void Player::unsubscribeMovingDirection(MovingDirection direction)
+{
+    if (direction == MovingDirection::RIGHT) {
+        rightPressed = false;
+    }
+    else if (direction == MovingDirection::UP) {
+        upPressed = false;
+    }
+    else if (direction == MovingDirection::LEFT) {
+        leftPressed = false;
+    }
+    else if (direction == MovingDirection::DOWN) {
+        downPressed = false;
+    }
+    validateInMotion();
+    calculateDefaultDirection();
+    calculateCombinedDirections();
 }
