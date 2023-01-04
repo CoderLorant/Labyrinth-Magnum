@@ -37,6 +37,6 @@ export namespace config {
 		const Sdl2Application::KeyEvent::Key moveDownKey = Sdl2Application::KeyEvent::Key::S;
 		const Sdl2Application::KeyEvent::Key moveRightKey = Sdl2Application::KeyEvent::Key::D;
 		const Magnum::Vector2 startMiddlePosition = { 0,0 };
-		const float startSpeed = 0.05f;
+		const float startSpeed = 0.03f;
 	}
 }

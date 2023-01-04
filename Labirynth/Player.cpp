@@ -106,6 +106,10 @@ void Player::checkCollisionDetectionWithScreenBorder()
 
 void Player::validateInMotion()
 {
+    if (upPressed && downPressed && leftPressed && rightPressed) {
+        inMotion = false;
+        return;
+    }
     if (upPressed && downPressed && !leftPressed && !rightPressed) {
         inMotion = false;
     }else if (leftPressed && rightPressed && !upPressed && !downPressed) {
@@ -119,29 +123,29 @@ void Player::validateInMotion()
 
 void Player::calculateCombinedDirections()
 {
-    if (upPressed && rightPressed) {
+    if (upPressed && rightPressed && !leftPressed && !downPressed) {
         movingAngle = 45;
     }
-    else if (downPressed && rightPressed) {
+    else if (downPressed && rightPressed && !leftPressed && !upPressed) {
         movingAngle = 315;
     }
-    else if (upPressed && leftPressed) {
+    else if (upPressed && leftPressed && !rightPressed && !downPressed) {
         movingAngle = 135;
     }
-    else if (downPressed && leftPressed) {
+    else if (downPressed && leftPressed && !rightPressed && !upPressed) {
         movingAngle = 225;
     }
 }
 
 void Player::calculateDefaultDirection()
 {
-    if (rightPressed) {
+    if (rightPressed && upPressed == downPressed) {
         movingAngle = 0;
-    }else if (upPressed) {
+    }else if (upPressed && leftPressed == rightPressed) {
         movingAngle = 90;
-    }else if (leftPressed) {
+    }else if (leftPressed && upPressed == downPressed) {
         movingAngle = 180;
-    }else if (downPressed) {
+    }else if (downPressed && leftPressed == rightPressed) {
         movingAngle = 270;
     }
 
@@ -159,8 +163,10 @@ void Player::subscribeMovingDirection(MovingDirection direction)
         downPressed = true;
     }
     validateInMotion();
-    calculateDefaultDirection();
-    calculateCombinedDirections();
+    if (inMotion) {
+        calculateDefaultDirection();
+        calculateCombinedDirections();
+    }
 }
 
 void Player::unsubscribeMovingDirection(MovingDirection direction)
