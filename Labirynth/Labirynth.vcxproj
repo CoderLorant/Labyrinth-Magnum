@@ -131,6 +131,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GridSystem.cpp" />
+    <ClCompile Include="GridSystem.ixx" />
     <ClCompile Include="Labirynth.cpp" />
     <ClCompile Include="LabyrinthConfig.ixx" />
     <ClCompile Include="Player.cpp" />

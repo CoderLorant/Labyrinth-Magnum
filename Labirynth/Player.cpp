@@ -15,12 +15,19 @@ using namespace Magnum::Math::Literals;
 using namespace Magnum::Platform;
 
 import Player;
+import GridSystem;
 
-Player::Player(Magnum::Vector2i playerSizeInPixels, Magnum::Vector2 startPosition, float startSpeed, Magnum::Vector2i screenSize){
-    scaleX = static_cast<float>(playerSizeInPixels.x()) / screenSize.x();
-    scaleY = static_cast<float>(playerSizeInPixels.y()) / screenSize.y();
+Player::Player(Magnum::Vector2i playerSizeInPixels, Magnum::Vector2 startPosition, float startSpeed, Magnum::Vector2i screenSize,
+                GridSystem grid) {
+
+    this->grid = grid;
+    auto scale = grid.getScaleFromPixelSizeTo1x1({ playerSizeInPixels[0], playerSizeInPixels[1] });
+    scaleX = scale.first;
+    scaleY = scale.second;
+
     Magnum::Vector2 playerScaleVector = { scaleX,scaleY };
     playerScale = Matrix3::scaling(playerScaleVector);
+    
     unscaledPlayerMiddlePosition = startPosition;
     height = scaleY * 2;
     width = scaleX * 2;

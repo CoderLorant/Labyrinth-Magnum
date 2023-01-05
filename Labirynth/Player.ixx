@@ -17,6 +17,8 @@ using namespace Magnum::Platform;
 
 export module Player;
 
+import GridSystem;
+
 export enum class MovingDirection {
     UP,
     DOWN,
@@ -25,7 +27,8 @@ export enum class MovingDirection {
 };
 export class Player {
 public:
-	Player(Magnum::Vector2i playerSizeInPixels, Magnum::Vector2 startPosition, float startSpeed, Magnum::Vector2i screenSize);
+	Player(Magnum::Vector2i playerSizeInPixels, Magnum::Vector2 startPosition, float startSpeed, Magnum::Vector2i screenSize, 
+            GridSystem grid);
     void draw();
     void subscribeMovingDirection(MovingDirection direction);
     void unsubscribeMovingDirection(MovingDirection direction);
@@ -35,6 +38,7 @@ private:
     void validateInMotion();
     void calculateCombinedDirections();
     void calculateDefaultDirection();
+    GridSystem grid;
     /// <summary>
     /// this is the middle position of the player within -1,1 cartisian coordinate system
     /// </summary>

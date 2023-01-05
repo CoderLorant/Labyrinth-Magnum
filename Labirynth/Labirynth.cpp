@@ -12,6 +12,7 @@
 
 import LabyrinthConfig;
 import Player;
+import GridSystem;
 
 using namespace Magnum;
 using namespace std;
@@ -30,8 +31,11 @@ private:
                         = std::chrono::system_clock::now() 
                             - std::chrono::microseconds(10s);
     int exitKeyPressCounter = 0;
+
+    GridSystem grid{ {config::window::screenSize[0], config::window::screenSize[1]}, config::map::gridSystemSize};
+
     Player player{ {config::player::playerWidth , config::player::playerHeight }, config::player::startMiddlePosition,
-                    config::player::startSpeed, config::window::screenSize };
+                    config::player::startSpeed, config::window::screenSize, grid };
     
 };
 
