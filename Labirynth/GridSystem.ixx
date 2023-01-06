@@ -15,10 +15,14 @@ export class GridSystem {
 public:
 	GridSystem();
 	GridSystem(std::pair<int, int> screenSize, std::pair<int, int> gridSystemSize);
-	std::pair<float, float> calculateXYByPixelCoord(std::pair<int, int> pixelCoords);
-	std::pair<float, float> calculateXYBy1x1Coord(std::pair<float, float> Coords1x1);
-	std::pair<float, float> getScaleFromPixelSizeTo1x1(std::pair<int, int> pixelSize);
-	std::pair<float, float> calculateSizeFromPixel(std::pair<int, int> pixelSize);
+
+	std::pair<float, float> calculateXYFromPixelToGrid(std::pair<int, int> pixelCoords);
+	std::pair<float, float> calculateXYFromPixelToMagnum(std::pair<int, int> pixelCoords);
+	std::pair<float, float> calculateXYFromMagnumToGrid(std::pair<float, float> Coords1x1);
+	std::pair<float, float> calculateXYFromGridToMagnum(std::pair<float, float> gridCoords);
+	std::pair<float, float> getSizeScaleFromPixelToMagnum(std::pair<int, int> pixelSize);
+	std::pair<float, float> calculateSizeFromPixelToGrid(std::pair<int, int> pixelSize);
+	std::pair<float, float> calculateSizeFromPixelToMagnum(std::pair<int, int> pixelSize);
 
 private:
 	int xAxisSize;

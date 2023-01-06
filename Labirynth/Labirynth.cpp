@@ -34,8 +34,8 @@ private:
 
     GridSystem grid{ {config::window::screenSize[0], config::window::screenSize[1]}, config::map::gridSystemSize};
 
-    Player player{ {config::player::playerWidth , config::player::playerHeight }, config::player::startMiddlePosition,
-                    config::player::startSpeed, config::window::screenSize, grid };
+    Player player{ {config::player::playerWidth , config::player::playerHeight }, config::player::startMiddlePositionInGridCoord,
+                    config::player::startSpeed, grid };
     
 };
 
