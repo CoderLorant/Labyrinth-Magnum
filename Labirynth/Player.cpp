@@ -16,6 +16,8 @@ using namespace Magnum::Platform;
 
 import Player;
 import GridSystem;
+import TrigonometricAngle;
+import CollisionDetector;
 
 Player::Player(Magnum::Vector2i playerSizeInPixels, Magnum::Vector2 startPositionInGridCoord, float startSpeed, GridSystem grid) {
 
@@ -47,6 +49,12 @@ Player::Player(Magnum::Vector2i playerSizeInPixels, Magnum::Vector2 startPositio
     Trade::MeshData squareMeshData = Primitives::squareSolid();
     squareMesh = MeshTools::compile(squareMeshData);
     this->speed = startSpeed;
+
+    playerHitBox = RectangleHitBox{{ TopY(topY), BottomY(bottomY), LeftX(leftX), RightX(rightX) }};
+
+    auto hitBoxCoord = playerHitBox.getMagnumCoordinates();
+    Debug{} << "Player hitbox = " << "top(" << hitBoxCoord.topY.value << ") bottom(" << hitBoxCoord.bottomY.value
+            << ") left(" << hitBoxCoord.leftX.value << ") right(" << hitBoxCoord.rightX.value << ")";
 }
 
 void Player::draw()
@@ -81,28 +89,76 @@ void Player::moveIfInMotion()
         sinCos = trigo315;
     }
     playerMiddleMagnumPosition += (Magnum::Vector2{ sinCos.cosine.value, sinCos.sine.value }) * speed;
+    calculateBorders();
+    playerHitBox.updateMagnumCoordinates({TopY(topY), BottomY(bottomY), LeftX(leftX), RightX(rightX) });
+
     checkCollisionDetectionWithScreenBorder();
+    checkCollisionDetectionWithWalls();
 }
 
 void Player::checkCollisionDetectionWithScreenBorder()
 {
-    calculateBorders();
     if (topY > 1.f) {
-        moveToEdge(MovingDirection::UP);
+        moveToEdgeOfLine(1, MovingDirection::DOWN);
     }
     if (bottomY < -1.f) {
-        moveToEdge(MovingDirection::DOWN);
+        moveToEdgeOfLine(-1, MovingDirection::UP);
     }
     if (leftX < -1.f) {
-        moveToEdge(MovingDirection::LEFT);
+        moveToEdgeOfLine(-1, MovingDirection::RIGHT);
     }
     if (rightX > 1.f) {
-        moveToEdge(MovingDirection::RIGHT);
+        moveToEdgeOfLine(1, MovingDirection::LEFT);
     }
+}
+
+void Player::checkCollisionDetectionWithWalls() {
+    auto wallHitbox = rectHitboxes[0];
+    bool collisionWithWall = hitBoxesCollide(playerHitBox, wallHitbox);
+    if (!collisionWithWall) {
+        return;
+    }
+
+    const auto wallCoord = wallHitbox.getMagnumCoordinates();
+
+    const float intrusionFromTop = wallCoord.topY.value - bottomY;
+    const float intrusionFromBottom = topY - wallCoord.bottomY.value;
+    const float intrusionFromRight = wallCoord.rightX.value - leftX;
+    const float intrusionFromLeft = rightX - wallCoord.leftX.value;
+
+    MovingDirection minimumIntrusionFrom = MovingDirection::UP;
+    float minimumIntrusion = intrusionFromTop;
+
+    if (intrusionFromBottom < minimumIntrusion) {
+        minimumIntrusion = intrusionFromBottom;
+        minimumIntrusionFrom = MovingDirection::DOWN;
+    }
+    if (intrusionFromRight < minimumIntrusion) {
+        minimumIntrusion = intrusionFromRight;
+        minimumIntrusionFrom = MovingDirection::RIGHT;
+    }
+    if (intrusionFromLeft < minimumIntrusion) {
+        minimumIntrusion = intrusionFromLeft;
+        minimumIntrusionFrom = MovingDirection::LEFT;
+    }
+
+    if (minimumIntrusionFrom == MovingDirection::DOWN) {
+        moveToEdgeOfLine(wallCoord.bottomY.value - 0.00001f, MovingDirection::DOWN);
+    } else if (minimumIntrusionFrom == MovingDirection::UP) {
+        moveToEdgeOfLine(wallCoord.topY.value + 0.00001f, MovingDirection::UP);
+    }else if (minimumIntrusionFrom == MovingDirection::RIGHT) {
+        moveToEdgeOfLine(wallCoord.rightX.value + 0.00001f, MovingDirection::RIGHT);
+    } else if (minimumIntrusionFrom == MovingDirection::LEFT) {
+        moveToEdgeOfLine(wallCoord.leftX.value - 0.00001f, MovingDirection::LEFT);
+    }
+
+    calculateBorders();
+    playerHitBox.updateMagnumCoordinates({ TopY(topY), BottomY(bottomY), LeftX(leftX), RightX(rightX) });
 }
 
 void Player::validateInMotion()
 {
+    // moving direction
     if (upPressed && downPressed && leftPressed && rightPressed) {
         inMotion = false;
         return;
@@ -155,24 +211,28 @@ void Player::calculateBorders()
     rightX = playerMiddleMagnumPosition.x() + magnumWidth / 2;
 }
 
-void Player::moveToEdge(MovingDirection direction)
+void Player::moveToEdgeOfLine(float magnumCoordinate, MovingDirection direction)
 {
     switch (direction) {
-        case MovingDirection::RIGHT:
-            playerMiddleMagnumPosition.x() = 1 - magnumWidth / 2; break;
         case MovingDirection::LEFT:
-            playerMiddleMagnumPosition.x() = -1 + magnumWidth / 2; break;
-        case MovingDirection::DOWN:
-            playerMiddleMagnumPosition.y() = -1 + magnumHeight / 2; break;
+            playerMiddleMagnumPosition.x() = magnumCoordinate - magnumWidth / 2; break;
+        case MovingDirection::RIGHT:
+            playerMiddleMagnumPosition.x() = magnumCoordinate + magnumWidth / 2; break;
         case MovingDirection::UP:
-            playerMiddleMagnumPosition.y() = 1 - magnumHeight / 2; break;
+            playerMiddleMagnumPosition.y() = magnumCoordinate + magnumHeight / 2; break;
+        case MovingDirection::DOWN:
+            playerMiddleMagnumPosition.y() = magnumCoordinate - magnumHeight / 2; break;
         default:
             break;
     }
 }
 
-void Player::subscribeMovingDirection(MovingDirection direction)
-{
+void Player::subscribeHitBox(RectangleHitBox rectHitBox) {
+    rectHitboxes.push_back(rectHitBox);
+    auto wallCoord = rectHitBox.getMagnumCoordinates();
+}
+
+void Player::subscribeMovingDirection(MovingDirection direction) {
     if (direction == MovingDirection::RIGHT) {
         rightPressed = true;
     } else if (direction == MovingDirection::UP) {
@@ -189,8 +249,7 @@ void Player::subscribeMovingDirection(MovingDirection direction)
     }
 }
 
-void Player::unsubscribeMovingDirection(MovingDirection direction)
-{
+void Player::unsubscribeMovingDirection(MovingDirection direction) {
     if (direction == MovingDirection::RIGHT) {
         rightPressed = false;
     } else if (direction == MovingDirection::UP) {

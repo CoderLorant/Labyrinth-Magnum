@@ -13,6 +13,7 @@
 import LabyrinthConfig;
 import Player;
 import GridSystem;
+import Wall;
 
 using namespace Magnum;
 using namespace std;
@@ -34,9 +35,10 @@ private:
 
     GridSystem grid{ {config::window::screenSize[0], config::window::screenSize[1]}, config::map::gridSystemSize};
 
+    Wall wall{ {TopY(0.5), BottomY(0.2), LeftX(-0.9), RightX(-0.3)}};
+
     Player player{ {config::player::playerWidth , config::player::playerHeight }, config::player::startMiddlePositionInGridCoord,
                     config::player::startSpeed, grid };
-    
 };
 
 GameWindow::GameWindow(const Arguments& arguments,
@@ -49,13 +51,23 @@ GameWindow::GameWindow(const Arguments& arguments,
 
     Debug{} << "Hello! This application is running on"
         << GL::Context::current().version() << "using"
-        << GL::Context::current().rendererString();    
+        << GL::Context::current().rendererString();
+
+    RectangleHitBox wallHitBox = wall.getHitBox();
+
+    auto wallCoords = wallHitBox.getMagnumCoordinates();
+    Debug{} << "wall hitbox = " << "top(" << wallCoords.topY.value << ") bottom(" << wallCoords.bottomY.value
+        << ") left(" << wallCoords.leftX.value << ") right(" << wallCoords.rightX.value << ")";
+
+    player.subscribeHitBox(wallHitBox);
 }
 
 void GameWindow::drawEvent() {
     GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
 
+    wall.draw();
     player.draw();
+
     swapBuffers();
     redraw();
 }
@@ -78,19 +90,12 @@ void GameWindow::keyPressEvent(KeyEvent& event) {
         }
     }
     else if (event.key() == config::player::moveUpKey) {
-  //      player.startMove(MovingDirection::UP);
         player.subscribeMovingDirection(MovingDirection::UP);
-    }
-    else if (event.key() == config::player::moveLeftKey) {
-  //      player.startMove(MovingDirection::LEFT);
+    } else if (event.key() == config::player::moveLeftKey) {
         player.subscribeMovingDirection(MovingDirection::LEFT);
-    }
-    else if (event.key() == config::player::moveDownKey) {
-  //      player.startMove(MovingDirection::DOWN);
+    } else if (event.key() == config::player::moveDownKey) {
         player.subscribeMovingDirection(MovingDirection::DOWN);
-    }
-    else if (event.key() == config::player::moveRightKey) {
-//        player.startMove(MovingDirection::RIGHT);
+    } else if (event.key() == config::player::moveRightKey) {
         player.subscribeMovingDirection(MovingDirection::RIGHT);
     }
 }
@@ -98,16 +103,13 @@ void GameWindow::keyPressEvent(KeyEvent& event) {
 void GameWindow::keyReleaseEvent(KeyEvent& event) {
      if (event.key() == config::player::moveUpKey) {
         player.unsubscribeMovingDirection(MovingDirection::UP);
-    }
-    else if (event.key() == config::player::moveLeftKey) {
+     } else if (event.key() == config::player::moveLeftKey) {
         player.unsubscribeMovingDirection(MovingDirection::LEFT);
-    }
-    else if (event.key() == config::player::moveDownKey) {
+     } else if (event.key() == config::player::moveDownKey) {
         player.unsubscribeMovingDirection(MovingDirection::DOWN);
-    }
-    else if (event.key() == config::player::moveRightKey) {
+     } else if (event.key() == config::player::moveRightKey) {
         player.unsubscribeMovingDirection(MovingDirection::RIGHT);
-    }
+     }
 }
 
 

@@ -1,4 +1,5 @@
 module;
+
 #include <Magnum/Math/Vector2.h>
 #include <Magnum/Math/Color.h>
 #include <Magnum/Platform/Sdl2Application.h>
@@ -11,6 +12,8 @@ module;
 #include <Magnum/MeshTools/Compile.h>
 #include <Magnum/Trade/MeshData.h>
 
+#include <vector>
+
 using namespace Magnum;
 using namespace Magnum::Math::Literals;
 using namespace Magnum::Platform;
@@ -18,6 +21,7 @@ using namespace Magnum::Platform;
 export module Player;
 
 import GridSystem;
+import RectangleHitBox;
 
 export enum class MovingDirection {
     UP,
@@ -30,25 +34,21 @@ export class Player {
 public:
 	Player(Magnum::Vector2i playerSizeInPixels, Magnum::Vector2 startPositionInGridCoord, float startSpeed, GridSystem grid);
     void draw();
+    // register, add
+    void subscribeHitBox(RectangleHitBox rectHitBox);
     void subscribeMovingDirection(MovingDirection direction);
     void unsubscribeMovingDirection(MovingDirection direction);
+
 private: 
-
-    struct Sine { float value; };
-    struct Cosine { float value; };
-    struct TrigonometricAngle { Sine sine; Cosine cosine; };
-
     void moveIfInMotion();
     void checkCollisionDetectionWithScreenBorder();
+    void checkCollisionDetectionWithWalls();
     void validateInMotion();
     void calculateCombinedDirections();
     void calculateDefaultDirection();
     void calculateBorders();
-    void moveToEdge(MovingDirection direction);
+    void moveToEdgeOfLine(float magnumCoordinate, MovingDirection direction);
     GridSystem grid;
-    /// <summary>
-    /// this is the middle position of the player within -1,1 cartisian coordinate system
-    /// </summary>
     Magnum::Vector2 playerMiddleMagnumPosition;
     Magnum::Matrix3 playerScale;
     GL::Mesh squareMesh;
@@ -68,15 +68,8 @@ private:
     bool leftPressed = false;
     bool upPressed = false;
     bool downPressed = false;
-
-    TrigonometricAngle trigo0{ Sine(0.f), Cosine(1.f) };
-    TrigonometricAngle trigo45{ Sine(0.707106f), Cosine(0.707106f) };
-    TrigonometricAngle trigo90{ Sine(1.f), Cosine(0) };
-    TrigonometricAngle trigo135{ Sine(0.707106f), Cosine(-0.707106f) };
-    TrigonometricAngle trigo180{ Sine(0.f), Cosine(-1.f) };
-    TrigonometricAngle trigo225{ Sine(-0.707106f), Cosine(-0.707106f) };
-    TrigonometricAngle trigo270{ Sine(-1.f), Cosine(0.f) };
-    TrigonometricAngle trigo315{ Sine(-0.707106f), Cosine(0.707106f) };
+    std::vector<RectangleHitBox> rectHitboxes;
+    RectangleHitBox playerHitBox;
 };
 
 

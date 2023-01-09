@@ -131,12 +131,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CollisionDetector.cpp" />
+    <ClCompile Include="CollisionDetector.ixx" />
     <ClCompile Include="GridSystem.cpp" />
     <ClCompile Include="GridSystem.ixx" />
     <ClCompile Include="Labirynth.cpp" />
     <ClCompile Include="LabyrinthConfig.ixx" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Player.ixx" />
+    <ClCompile Include="RectangleHitBox.cpp" />
+    <ClCompile Include="RectangleHitBox.ixx" />
+    <ClCompile Include="RectangleCoordinates.ixx" />
+    <ClCompile Include="TrigonometricAngle.ixx" />
+    <ClCompile Include="Wall.cpp" />
+    <ClCompile Include="Wall.ixx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
