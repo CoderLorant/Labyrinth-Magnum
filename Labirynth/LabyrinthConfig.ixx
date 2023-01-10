@@ -41,7 +41,7 @@ export namespace config {
 		const Sdl2Application::KeyEvent::Key moveDownKey = Sdl2Application::KeyEvent::Key::S;
 		const Sdl2Application::KeyEvent::Key moveRightKey = Sdl2Application::KeyEvent::Key::D;
 		const Magnum::Vector2 startMiddlePositionInGridCoord = { 50, 50 };
-		const float startSpeed = 0.0008f;
+		const float startSpeed = 0.0005f;
 	}
 
 	namespace map {

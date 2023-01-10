@@ -145,6 +145,10 @@
     <ClCompile Include="TrigonometricAngle.ixx" />
     <ClCompile Include="Wall.cpp" />
     <ClCompile Include="Wall.ixx" />
+    <ClCompile Include="WinHandler.cpp" />
+    <ClCompile Include="WinHandler.ixx" />
+    <ClCompile Include="WinPoint.cpp" />
+    <ClCompile Include="WinPoint.ixx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

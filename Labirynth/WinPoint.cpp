@@ -14,14 +14,10 @@ using namespace Magnum;
 using namespace Magnum::Math::Literals;
 using namespace Magnum::Platform;
 
-import Wall;
+import WinPoint;
 
-Wall::Wall(RectangleCoordinates rectMagnumCoordinates) {
-	magnumCoords = rectMagnumCoordinates;
-	initialize();
-}
-
-void Wall::initialize() {
+void WinPoint::initialize(RectangleCoordinates rectCoords) {
+	magnumCoords = rectCoords;
 	hitBox = magnumCoords;
 	Vector2 middlePos{ magnumCoords.getMiddleX(), magnumCoords.getMiddleY() };
 	float width = magnumCoords.getWidth();
@@ -31,12 +27,12 @@ void Wall::initialize() {
 	rectangleMesh = MeshTools::compile(Primitives::squareSolid());
 }
 
-RectangleHitBox Wall::getHitBox() {
+RectangleHitBox WinPoint::getHitBox() {
 	return hitBox;
 }
 
-void Wall::draw() {
+void WinPoint::draw() {
 	rectangleShader.setTransformationProjectionMatrix(transformationMatrix)
-		.setColor(0xff9900_rgbf)
+		.setColor(0x87fbff_rgbf)
 		.draw(rectangleMesh);
 }

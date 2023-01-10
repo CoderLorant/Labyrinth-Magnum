@@ -59,10 +59,17 @@ Player::Player(Magnum::Vector2i playerSizeInPixels, Magnum::Vector2 startPositio
 
 void Player::draw()
 {
-    moveIfInMotion();
+    if (!inPause) {
+        moveIfInMotion();
+    }
     squareShader.setTransformationProjectionMatrix(Matrix3::translation(playerMiddleMagnumPosition) * playerScale)
                 .setColor(0x329ea8_rgbf)
                 .draw(squareMesh);
+}
+
+void Player::subscribeWinPoint(RectangleHitBox rectHitBox, std::function<void()> winFunction) {
+    winPointHitBox = rectHitBox;
+    this->winFunction = winFunction;
 }
 
 void Player::moveIfInMotion()
@@ -92,12 +99,12 @@ void Player::moveIfInMotion()
     calculateBorders();
     playerHitBox.updateMagnumCoordinates({TopY(topY), BottomY(bottomY), LeftX(leftX), RightX(rightX) });
 
+    checkCollisionDetectionWithWinPoint();
     checkCollisionDetectionWithScreenBorder();
     checkCollisionDetectionWithWalls();
 }
 
-void Player::checkCollisionDetectionWithScreenBorder()
-{
+void Player::checkCollisionDetectionWithScreenBorder() {
     if (topY > 1.f) {
         moveToEdgeOfLine(1, MovingDirection::DOWN);
     }
@@ -156,9 +163,23 @@ void Player::checkCollisionDetectionWithWalls() {
     playerHitBox.updateMagnumCoordinates({ TopY(topY), BottomY(bottomY), LeftX(leftX), RightX(rightX) });
 }
 
+void Player::checkCollisionDetectionWithWinPoint() {
+    bool collision = hitBoxesCollide(playerHitBox, winPointHitBox);
+    if (!collision) {
+        return;
+    }
+    pause();
+    winFunction();
+}
+
 void Player::validateInMotion()
 {
     // moving direction
+    if (inPause) {
+        inMotion = false;
+        return;
+    }
+
     if (upPressed && downPressed && leftPressed && rightPressed) {
         inMotion = false;
         return;
@@ -227,7 +248,7 @@ void Player::moveToEdgeOfLine(float magnumCoordinate, MovingDirection direction)
     }
 }
 
-void Player::subscribeHitBox(RectangleHitBox rectHitBox) {
+void Player::subscribeWallHitBox(RectangleHitBox rectHitBox) {
     rectHitboxes.push_back(rectHitBox);
     auto wallCoord = rectHitBox.getMagnumCoordinates();
 }
@@ -243,7 +264,7 @@ void Player::subscribeMovingDirection(MovingDirection direction) {
         downPressed = true;
     }
     validateInMotion();
-    if (inMotion) {
+    if (inMotion && !inPause) {
         calculateDefaultDirection();
         calculateCombinedDirections();
     }
@@ -260,6 +281,12 @@ void Player::unsubscribeMovingDirection(MovingDirection direction) {
         downPressed = false;
     }
     validateInMotion();
-    calculateDefaultDirection();
-    calculateCombinedDirections();
+    if (inMotion && !inPause) {
+        calculateDefaultDirection();
+        calculateCombinedDirections();
+    }
+}
+
+void Player::pause() {
+    inPause = true;
 }

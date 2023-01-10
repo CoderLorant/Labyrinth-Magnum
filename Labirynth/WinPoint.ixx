@@ -12,7 +12,7 @@ module;
 #include <Magnum/MeshTools/Compile.h>
 #include <Magnum/Trade/MeshData.h>
 
-export module Wall;
+export module WinPoint;
 
 using namespace Magnum;
 using namespace Magnum::Math::Literals;
@@ -21,10 +21,9 @@ using namespace Magnum::Platform;
 export import RectangleCoordinates;
 export import RectangleHitBox;
 
-export class Wall {
+export class WinPoint {
 public:
-	Wall(RectangleCoordinates rectMagnumCoordinates);
-	void initialize();
+	void initialize(RectangleCoordinates rectCoords);
 	RectangleHitBox getHitBox();
 	void draw();
 private:

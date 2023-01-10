@@ -60,5 +60,17 @@
     <ClCompile Include="Labirynth.cpp">
       <Filter>Source Files\GameApp</Filter>
     </ClCompile>
+    <ClCompile Include="WinPoint.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WinPoint.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WinHandler.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WinHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

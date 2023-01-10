@@ -7,6 +7,8 @@
 #include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/Shaders/Flat.h>
 #include <Magnum/Math/Matrix3.h>
+
+#include <functional>
 #include <vector>
 #include <chrono>
 
@@ -14,6 +16,8 @@ import LabyrinthConfig;
 import Player;
 import GridSystem;
 import Wall;
+import WinPoint;
+import WinHandler;
 
 using namespace Magnum;
 using namespace std;
@@ -33,10 +37,10 @@ private:
                             - std::chrono::microseconds(10s);
     int exitKeyPressCounter = 0;
 
+    WinHandler winHandler;
+    WinPoint winPoint;
     GridSystem grid{ {config::window::screenSize[0], config::window::screenSize[1]}, config::map::gridSystemSize};
-
-    Wall wall{ {TopY(0.5), BottomY(0.2), LeftX(-0.9), RightX(-0.3)}};
-
+    std::vector<Wall> walls;
     Player player{ {config::player::playerWidth , config::player::playerHeight }, config::player::startMiddlePositionInGridCoord,
                     config::player::startSpeed, grid };
 };
@@ -53,20 +57,39 @@ GameWindow::GameWindow(const Arguments& arguments,
         << GL::Context::current().version() << "using"
         << GL::Context::current().rendererString();
 
-    RectangleHitBox wallHitBox = wall.getHitBox();
+    RectangleCoordinates wallGridCoordinates{TopY(200), BottomY(250), LeftX(10), RightX(100)};
+    RectangleCoordinates winPointGridCoordinates{TopY(147), BottomY(153), LeftX(148), RightX(152)};
 
+    // wall
+    auto wallMagnumCoordinates = grid.calculateRectangleCoordsFromGridToMagnum(wallGridCoordinates);
+    Wall wall{wallMagnumCoordinates};
+    RectangleHitBox wallHitBox = wall.getHitBox();
+    player.subscribeWallHitBox(wallHitBox);
+    walls.push_back(std::move(wall));
+
+    // winPoint
+    auto winPointMagnumCoordinates = grid.calculateRectangleCoordsFromGridToMagnum(winPointGridCoordinates);
+    winPoint.initialize(winPointMagnumCoordinates);
+    auto winPointHitBox = winPoint.getHitBox();
+    player.subscribeWinPoint(winPointHitBox, std::bind(&WinHandler::callbackWinFunction, winHandler));
     auto wallCoords = wallHitBox.getMagnumCoordinates();
     Debug{} << "wall hitbox = " << "top(" << wallCoords.topY.value << ") bottom(" << wallCoords.bottomY.value
         << ") left(" << wallCoords.leftX.value << ") right(" << wallCoords.rightX.value << ")";
 
-    player.subscribeHitBox(wallHitBox);
+    
 }
 
 void GameWindow::drawEvent() {
     GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
 
-    wall.draw();
+    int n = walls.size();
+    for (int i = 0; i < n; ++i) {
+        walls[i].draw();
+    }
+
+    winPoint.draw();
     player.draw();
+    winHandler.draw();
 
     swapBuffers();
     redraw();

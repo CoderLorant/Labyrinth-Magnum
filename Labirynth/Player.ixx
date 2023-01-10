@@ -12,6 +12,7 @@ module;
 #include <Magnum/MeshTools/Compile.h>
 #include <Magnum/Trade/MeshData.h>
 
+#include <functional>
 #include <vector>
 
 using namespace Magnum;
@@ -34,15 +35,16 @@ export class Player {
 public:
 	Player(Magnum::Vector2i playerSizeInPixels, Magnum::Vector2 startPositionInGridCoord, float startSpeed, GridSystem grid);
     void draw();
-    // register, add
-    void subscribeHitBox(RectangleHitBox rectHitBox);
+    void subscribeWinPoint(RectangleHitBox rectHitBox, std::function<void()> winFunction);
+    void subscribeWallHitBox(RectangleHitBox rectHitBox);
     void subscribeMovingDirection(MovingDirection direction);
     void unsubscribeMovingDirection(MovingDirection direction);
-
+    void pause();
 private: 
     void moveIfInMotion();
     void checkCollisionDetectionWithScreenBorder();
     void checkCollisionDetectionWithWalls();
+    void checkCollisionDetectionWithWinPoint();
     void validateInMotion();
     void calculateCombinedDirections();
     void calculateDefaultDirection();
@@ -70,6 +72,9 @@ private:
     bool downPressed = false;
     std::vector<RectangleHitBox> rectHitboxes;
     RectangleHitBox playerHitBox;
+    RectangleHitBox winPointHitBox;
+    std::function<void()> winFunction;
+    bool inPause = false;
 };
 
 
