@@ -6,7 +6,7 @@ export class RectangleHitBox {
 public:
 	RectangleHitBox();
 	RectangleHitBox(RectangleCoordinates hitBoxMagnumCoordinates);
-	RectangleCoordinates getMagnumCoordinates();
+	RectangleCoordinates getMagnumCoordinates() const;
 	void updateMagnumCoordinates(RectangleCoordinates rectangleMagnumCoordinates);
 
 private:

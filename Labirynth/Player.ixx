@@ -50,6 +50,7 @@ private:
     void calculateDefaultDirection();
     void calculateBorders();
     void moveToEdgeOfLine(float magnumCoordinate, MovingDirection direction);
+    void moveToEdgeOfWallByPrediction(const RectangleHitBox& wallHitbox);
     GridSystem grid;
     Magnum::Vector2 playerMiddleMagnumPosition;
     Magnum::Matrix3 playerScale;

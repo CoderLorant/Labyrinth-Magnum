@@ -57,26 +57,27 @@ GameWindow::GameWindow(const Arguments& arguments,
         << GL::Context::current().version() << "using"
         << GL::Context::current().rendererString();
 
-    RectangleCoordinates wallGridCoordinates{TopY(200), BottomY(250), LeftX(10), RightX(100)};
-    RectangleCoordinates winPointGridCoordinates{TopY(147), BottomY(153), LeftX(148), RightX(152)};
+    // wallCoordinates
+    std:vector<RectangleCoordinates> wallGridCoordinates{
+        {TopY(200), BottomY(250), LeftX(10), RightX(100)},
+        {TopY(120), BottomY(200), LeftX(90), RightX(110)},
+        {TopY(10), BottomY(20), LeftX(10), RightX(20)}
+    };
 
-    // wall
-    auto wallMagnumCoordinates = grid.calculateRectangleCoordsFromGridToMagnum(wallGridCoordinates);
-    Wall wall{wallMagnumCoordinates};
-    RectangleHitBox wallHitBox = wall.getHitBox();
-    player.subscribeWallHitBox(wallHitBox);
-    walls.push_back(std::move(wall));
+    for (const auto& wallGridCoords : wallGridCoordinates) {
+        auto wallMagnumCoordinates = grid.calculateRectangleCoordsFromGridToMagnum(wallGridCoords);
+        Wall wall{ wallMagnumCoordinates };
+        RectangleHitBox wallHitBox = wall.getHitBox();
+        player.subscribeWallHitBox(std::move(wallHitBox));
+        walls.push_back(std::move(wall));
+    }
 
     // winPoint
+    RectangleCoordinates winPointGridCoordinates{ TopY(147), BottomY(153), LeftX(148), RightX(152) };
     auto winPointMagnumCoordinates = grid.calculateRectangleCoordsFromGridToMagnum(winPointGridCoordinates);
     winPoint.initialize(winPointMagnumCoordinates);
     auto winPointHitBox = winPoint.getHitBox();
     player.subscribeWinPoint(winPointHitBox, std::bind(&WinHandler::callbackWinFunction, winHandler));
-    auto wallCoords = wallHitBox.getMagnumCoordinates();
-    Debug{} << "wall hitbox = " << "top(" << wallCoords.topY.value << ") bottom(" << wallCoords.bottomY.value
-        << ") left(" << wallCoords.leftX.value << ") right(" << wallCoords.rightX.value << ")";
-
-    
 }
 
 void GameWindow::drawEvent() {

@@ -14,6 +14,7 @@ using namespace Magnum;
 using namespace Magnum::Math::Literals;
 using namespace Magnum::Platform;
 
+
 import Player;
 import GridSystem;
 import TrigonometricAngle;
@@ -120,47 +121,13 @@ void Player::checkCollisionDetectionWithScreenBorder() {
 }
 
 void Player::checkCollisionDetectionWithWalls() {
-    auto wallHitbox = rectHitboxes[0];
-    bool collisionWithWall = hitBoxesCollide(playerHitBox, wallHitbox);
-    if (!collisionWithWall) {
-        return;
+    for (const auto& wallHitbox : rectHitboxes) {
+        bool collisionWithWall = hitBoxesCollide(playerHitBox, wallHitbox);
+        if (!collisionWithWall) { continue; }
+        moveToEdgeOfWallByPrediction(wallHitbox);
+        calculateBorders();
+        playerHitBox.updateMagnumCoordinates({ TopY(topY), BottomY(bottomY), LeftX(leftX), RightX(rightX) });
     }
-
-    const auto wallCoord = wallHitbox.getMagnumCoordinates();
-
-    const float intrusionFromTop = wallCoord.topY.value - bottomY;
-    const float intrusionFromBottom = topY - wallCoord.bottomY.value;
-    const float intrusionFromRight = wallCoord.rightX.value - leftX;
-    const float intrusionFromLeft = rightX - wallCoord.leftX.value;
-
-    MovingDirection minimumIntrusionFrom = MovingDirection::UP;
-    float minimumIntrusion = intrusionFromTop;
-
-    if (intrusionFromBottom < minimumIntrusion) {
-        minimumIntrusion = intrusionFromBottom;
-        minimumIntrusionFrom = MovingDirection::DOWN;
-    }
-    if (intrusionFromRight < minimumIntrusion) {
-        minimumIntrusion = intrusionFromRight;
-        minimumIntrusionFrom = MovingDirection::RIGHT;
-    }
-    if (intrusionFromLeft < minimumIntrusion) {
-        minimumIntrusion = intrusionFromLeft;
-        minimumIntrusionFrom = MovingDirection::LEFT;
-    }
-
-    if (minimumIntrusionFrom == MovingDirection::DOWN) {
-        moveToEdgeOfLine(wallCoord.bottomY.value - 0.00001f, MovingDirection::DOWN);
-    } else if (minimumIntrusionFrom == MovingDirection::UP) {
-        moveToEdgeOfLine(wallCoord.topY.value + 0.00001f, MovingDirection::UP);
-    }else if (minimumIntrusionFrom == MovingDirection::RIGHT) {
-        moveToEdgeOfLine(wallCoord.rightX.value + 0.00001f, MovingDirection::RIGHT);
-    } else if (minimumIntrusionFrom == MovingDirection::LEFT) {
-        moveToEdgeOfLine(wallCoord.leftX.value - 0.00001f, MovingDirection::LEFT);
-    }
-
-    calculateBorders();
-    playerHitBox.updateMagnumCoordinates({ TopY(topY), BottomY(bottomY), LeftX(leftX), RightX(rightX) });
 }
 
 void Player::checkCollisionDetectionWithWinPoint() {
@@ -245,6 +212,24 @@ void Player::moveToEdgeOfLine(float magnumCoordinate, MovingDirection direction)
             playerMiddleMagnumPosition.y() = magnumCoordinate - magnumHeight / 2; break;
         default:
             break;
+    }
+}
+
+void Player::moveToEdgeOfWallByPrediction(const RectangleHitBox& wallHitbox) {
+    IntrusionDirection intrusionFrom = predictIntrusionDirection(wallHitbox, playerHitBox);
+    const auto wallCoord = wallHitbox.getMagnumCoordinates();
+    const float epsilon = 0.00001f;
+    if (intrusionFrom == IntrusionDirection::DOWN) {
+        moveToEdgeOfLine(wallCoord.bottomY.value - epsilon, MovingDirection::DOWN);
+    }
+    else if (intrusionFrom == IntrusionDirection::UP) {
+        moveToEdgeOfLine(wallCoord.topY.value + epsilon, MovingDirection::UP);
+    }
+    else if (intrusionFrom == IntrusionDirection::RIGHT) {
+        moveToEdgeOfLine(wallCoord.rightX.value + epsilon, MovingDirection::RIGHT);
+    }
+    else if (intrusionFrom == IntrusionDirection::LEFT) {
+        moveToEdgeOfLine(wallCoord.leftX.value - epsilon, MovingDirection::LEFT);
     }
 }
 

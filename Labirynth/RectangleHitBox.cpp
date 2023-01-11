@@ -6,7 +6,7 @@ RectangleHitBox::RectangleHitBox(RectangleCoordinates hitBoxMagnumCoordinates) {
 	magnumCoordinates = hitBoxMagnumCoordinates;
 }
 
-RectangleCoordinates RectangleHitBox::getMagnumCoordinates() {
+RectangleCoordinates RectangleHitBox::getMagnumCoordinates() const {
 	return magnumCoordinates;
 }
 
