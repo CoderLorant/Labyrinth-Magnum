@@ -275,3 +275,8 @@ void Player::unsubscribeMovingDirection(MovingDirection direction) {
 void Player::pause() {
     inPause = true;
 }
+
+//void Player::setWinHandler(WinHandler winHandler)
+//{
+//    //this->winHandler = winHandler;
+//}

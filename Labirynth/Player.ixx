@@ -13,6 +13,7 @@ module;
 #include <Magnum/Trade/MeshData.h>
 
 #include <functional>
+#include <memory>
 #include <vector>
 
 using namespace Magnum;
@@ -23,6 +24,7 @@ export module Player;
 
 import GridSystem;
 import RectangleHitBox;
+import WinHandler;
 
 export enum class MovingDirection {
     UP,
@@ -40,6 +42,7 @@ public:
     void subscribeMovingDirection(MovingDirection direction);
     void unsubscribeMovingDirection(MovingDirection direction);
     void pause();
+    void setWinHandler(WinHandler winHandler);
 private: 
     void moveIfInMotion();
     void checkCollisionDetectionWithScreenBorder();
@@ -76,6 +79,7 @@ private:
     RectangleHitBox winPointHitBox;
     std::function<void()> winFunction;
     bool inPause = false;
+    //WinHandler winHandler;
 };
 
 

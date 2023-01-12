@@ -1,14 +1,24 @@
+﻿#include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/DebugStl.h>
-#include <Magnum/GL/DefaultFramebuffer.h>
+#include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Resource.h>
 #include <Magnum/GL/Context.h>
+#include <Magnum/GL/DefaultFramebuffer.h>
+#include <Magnum/GL/Mesh.h>
 #include <Magnum/GL/Renderer.h>
 #include <Magnum/GL/Version.h>
 #include <Magnum/Math/Color.h>
-#include <Magnum/Platform/Sdl2Application.h>
-#include <Magnum/Shaders/Flat.h>
+#include <Magnum/Math/Complex.h>
 #include <Magnum/Math/Matrix3.h>
+#include <Magnum/Platform/Sdl2Application.h>
+#include <Magnum/Shaders/DistanceFieldVector.h>
+#include <Magnum/Shaders/Flat.h>
+#include <Magnum/Text/AbstractFont.h>
+#include <Magnum/Text/DistanceFieldGlyphCache.h>
+#include <Magnum/Text/Renderer.h>
 
 #include <functional>
+#include <memory>
 #include <vector>
 #include <chrono>
 
@@ -37,17 +47,31 @@ private:
                             - std::chrono::microseconds(10s);
     int exitKeyPressCounter = 0;
 
-    WinHandler winHandler;
+    std::shared_ptr<WinHandler> winHandler = std::make_shared<WinHandler>();
     WinPoint winPoint;
     GridSystem grid{ {config::window::screenSize[0], config::window::screenSize[1]}, config::map::gridSystemSize};
     std::vector<Wall> walls;
     Player player{ {config::player::playerWidth , config::player::playerHeight }, config::player::startMiddlePositionInGridCoord,
                     config::player::startSpeed, grid };
+
+    PluginManager::Manager<Text::AbstractFont> _manager;
+    Containers::Pointer<Text::AbstractFont> _font;
+
+    Text::DistanceFieldGlyphCache _cache;
+    GL::Mesh _rotatingText{ NoCreate };
+    GL::Buffer _vertices, _indices;
+    Containers::Pointer<Text::Renderer2D> _dynamicText;
+    Shaders::DistanceFieldVector2D _shader;
+
+    Matrix3 _transformationRotatingText,
+        _projectionRotatingText,
+        _transformationProjectionDynamicText;
 };
 
 GameWindow::GameWindow(const Arguments& arguments,
     const Configuration& config, const GLConfiguration& glConfig) :
-    Platform::Application{ arguments, config, glConfig }
+        Platform::Application{ arguments, config, glConfig },
+        _cache{ Vector2i{2048}, Vector2i{512}, 22 }
 {
 
    GL::Renderer::setClearColor(config::window::backgroundColor);
@@ -56,6 +80,8 @@ GameWindow::GameWindow(const Arguments& arguments,
     Debug{} << "Hello! This application is running on"
         << GL::Context::current().version() << "using"
         << GL::Context::current().rendererString();
+
+    winHandler->initialize();
 
     // wallCoordinates
     std:vector<RectangleCoordinates> wallGridCoordinates{
@@ -77,7 +103,12 @@ GameWindow::GameWindow(const Arguments& arguments,
     auto winPointMagnumCoordinates = grid.calculateRectangleCoordsFromGridToMagnum(winPointGridCoordinates);
     winPoint.initialize(winPointMagnumCoordinates);
     auto winPointHitBox = winPoint.getHitBox();
-    player.subscribeWinPoint(winPointHitBox, std::bind(&WinHandler::callbackWinFunction, winHandler));
+
+    player.subscribeWinPoint(winPointHitBox, std::bind(&WinHandler::callbackWinFunction, winHandler.get()));
+    //player.subscribeWinPoint(winPointHitBox, std::bind([]() {}));
+
+    // text
+    
 }
 
 void GameWindow::drawEvent() {
@@ -90,7 +121,7 @@ void GameWindow::drawEvent() {
 
     winPoint.draw();
     player.draw();
-    winHandler.draw();
+    winHandler->drawAfterWin();
 
     swapBuffers();
     redraw();

@@ -34,8 +34,8 @@ export namespace config {
 	}
 
 	namespace player {
-		const int playerWidth = 30;
-		const int playerHeight = 30;
+		const int playerWidth = 15;
+		const int playerHeight = 15;
 		const Sdl2Application::KeyEvent::Key moveUpKey = Sdl2Application::KeyEvent::Key::W;
 		const Sdl2Application::KeyEvent::Key moveLeftKey = Sdl2Application::KeyEvent::Key::A;
 		const Sdl2Application::KeyEvent::Key moveDownKey = Sdl2Application::KeyEvent::Key::S;
@@ -45,6 +45,6 @@ export namespace config {
 	}
 
 	namespace map {
-		const std::pair<int, int> gridSystemSize {300, 300 };
+		const std::pair<int, int> gridSystemSize {600, 400 };
 	}
 }
