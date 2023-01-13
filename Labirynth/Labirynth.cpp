@@ -85,9 +85,14 @@ GameWindow::GameWindow(const Arguments& arguments,
 
     // wallCoordinates
     std:vector<RectangleCoordinates> wallGridCoordinates{
-        {TopY(200), BottomY(250), LeftX(10), RightX(100)},
-        {TopY(120), BottomY(200), LeftX(90), RightX(110)},
-        {TopY(10), BottomY(20), LeftX(10), RightX(20)}
+        {TopY(20), BottomY(44), LeftX(20), RightX(22)},
+        {TopY(20), BottomY(22), LeftX(22), RightX(62)},
+        {TopY(42), BottomY(44), LeftX(42), RightX(62)},
+        {TopY(20), BottomY(44), LeftX(62), RightX(64)},
+        {TopY(64), BottomY(66), LeftX(42), RightX(106)},
+        {TopY(64), BottomY(126), LeftX(106), RightX(108)},
+        {TopY(126), BottomY(128), LeftX(106), RightX(148)}
+        
     };
 
     for (const auto& wallGridCoords : wallGridCoordinates) {
@@ -99,7 +104,7 @@ GameWindow::GameWindow(const Arguments& arguments,
     }
 
     // winPoint
-    RectangleCoordinates winPointGridCoordinates{ TopY(147), BottomY(153), LeftX(148), RightX(152) };
+    RectangleCoordinates winPointGridCoordinates{ TopY(130), BottomY(145), LeftX(133), RightX(148) };
     auto winPointMagnumCoordinates = grid.calculateRectangleCoordsFromGridToMagnum(winPointGridCoordinates);
     winPoint.initialize(winPointMagnumCoordinates);
     auto winPointHitBox = winPoint.getHitBox();

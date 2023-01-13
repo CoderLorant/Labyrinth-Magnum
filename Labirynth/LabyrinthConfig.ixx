@@ -34,14 +34,14 @@ export namespace config {
 	}
 
 	namespace player {
-		const int playerWidth = 15;
-		const int playerHeight = 15;
+		const int playerWidth = 20;
+		const int playerHeight = 20;
 		const Sdl2Application::KeyEvent::Key moveUpKey = Sdl2Application::KeyEvent::Key::W;
 		const Sdl2Application::KeyEvent::Key moveLeftKey = Sdl2Application::KeyEvent::Key::A;
 		const Sdl2Application::KeyEvent::Key moveDownKey = Sdl2Application::KeyEvent::Key::S;
 		const Sdl2Application::KeyEvent::Key moveRightKey = Sdl2Application::KeyEvent::Key::D;
-		const Magnum::Vector2 startMiddlePositionInGridCoord = { 50, 50 };
-		const float startSpeed = 0.0005f;
+		const Magnum::Vector2 startMiddlePositionInGridCoord = { 50, 31 };
+		const float startSpeed = 0.0002f;
 	}
 
 	namespace map {
