@@ -77,6 +77,8 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalUsingDirectories>$(VcpkgRoot)\installed\x64-windows\include\AL;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>$(VcpkgRoot)\installed\x64-windows\include\AL;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -92,6 +94,8 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalUsingDirectories>$(VcpkgRoot)\installed\x64-windows\include\AL;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>$(VcpkgRoot)\installed\x64-windows\include\AL;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -107,6 +111,8 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalUsingDirectories>$(VcpkgRoot)\installed\x64-windows\include\AL;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>$(VcpkgRoot)\installed\x64-windows\include\AL;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -122,6 +128,8 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalUsingDirectories>$(VcpkgRoot)\installed\x64-windows\include\AL;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>$(VcpkgRoot)\installed\x64-windows\include\AL;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -142,6 +150,8 @@
     <ClCompile Include="RectangleHitBox.cpp" />
     <ClCompile Include="RectangleHitBox.ixx" />
     <ClCompile Include="RectangleCoordinates.ixx" />
+    <ClCompile Include="SoundHandler.cpp" />
+    <ClCompile Include="SoundHandler.ixx" />
     <ClCompile Include="TrigonometricAngle.ixx" />
     <ClCompile Include="Wall.cpp" />
     <ClCompile Include="Wall.ixx" />

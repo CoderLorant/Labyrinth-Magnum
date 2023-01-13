@@ -22,12 +22,13 @@
 #include <vector>
 #include <chrono>
 
+import GridSystem;
 import LabyrinthConfig;
 import Player;
-import GridSystem;
+import SoundHandler;
 import Wall;
-import WinPoint;
 import WinHandler;
+import WinPoint;
 
 using namespace Magnum;
 using namespace std;
@@ -66,6 +67,8 @@ private:
     Matrix3 _transformationRotatingText,
         _projectionRotatingText,
         _transformationProjectionDynamicText;
+
+    SoundHandler soundHandler;
 };
 
 GameWindow::GameWindow(const Arguments& arguments,
@@ -80,6 +83,10 @@ GameWindow::GameWindow(const Arguments& arguments,
     Debug{} << "Hello! This application is running on"
         << GL::Context::current().version() << "using"
         << GL::Context::current().rendererString();
+
+    /* Loop at 60 Hz max */
+    /*setSwapInterval(1);
+    setMinimalLoopPeriod(16);*/
 
     winHandler->initialize();
 

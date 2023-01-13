@@ -16,6 +16,9 @@
     <Filter Include="Source Files\GameApp">
       <UniqueIdentifier>{fa544a12-a931-420e-91dc-2d3571f4adb2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Collision">
+      <UniqueIdentifier>{c5061af6-0ee5-489e-a0ff-085b4fed446f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="LabyrinthConfig.ixx">
@@ -36,19 +39,7 @@
     <ClCompile Include="TrigonometricAngle.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RectangleHitBox.ixx">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CollisionDetector.ixx">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RectangleHitBox.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="RectangleCoordinates.ixx">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CollisionDetector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Wall.ixx">
@@ -70,6 +61,24 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="WinHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionDetector.cpp">
+      <Filter>Source Files\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionDetector.ixx">
+      <Filter>Source Files\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="RectangleHitBox.cpp">
+      <Filter>Source Files\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="RectangleHitBox.ixx">
+      <Filter>Source Files\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundHandler.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
